@@ -1,19 +1,12 @@
 #include <stdio.h>
+
+#include "code/Insert.c"
+#include "code/Remove.c"
+#include "code/Compress.c"
+#include "code/Util.c"
+
 #define true 1;
 #define false 0;
-
-typedef struct s_Register {
-    int IdCliente;
-    int IdFilme;
-    char NomeCliente[50];
-    char NomeFilme[50];
-    char Genero[50];
-} REGISTER;
-
-typedef struct s_Key {
-    int IdCliente;
-    int IdFilme;
-} KEY;
 
 /*
 
@@ -33,68 +26,9 @@ typedef struct s_Key {
     setimo campo: Genero
 
     A partir do terceiro campo, eles vao ser separados usando # (obrigatorio) 
-
+    EXEMPLO: 61$1#1#João da Silva# Indiana Jones e a Última Cruzada#Aventura
 */
 
-void Insert(REGISTER registerData)
-{
-    /*
-    abre DataResult.bin
-    recebe o registro a ser inserido
-    salva o tamanho dele - size (vamos usar para comparar daqui a pouco)
-    verifica o Header 
-        se ele for -1
-            adiciona no final do arquivo DataResult.bin
-            printa falando que o registro foi inserido com sucesso no final do arquivo
-            return
-        senao
-            endereco = verifica(endereco que ta no header, size);
-            (é uma funcao recursiva)
-    adiciona no endereco
-    printa falando que o registro foi inserido com sucesso a partir do byte "x"
-
-    return
-    */
-}
-
-int Verifica(int address, int size)
-{
-    /*
-    verifica quanto espaço tem aquele endereco de memoria 
-        se ele for -1 
-            retorna -1
-        se ele for maior q size 
-            retorna esse endereco 
-        senao
-            result = verifica o proximo
-    return result
-    */
-}
-
-void Remove(KEY key)
-{
-    /*
-    recebe a chave a ser removida “CodCli+CodF”
-    abre DataResult.bin
-    removido = false
-    percorre todos os registros
-        se a chave bate
-            printa o registro a ser removido (acho bom q assim a gente sempre vai ter nocao das coisas)
-            printa falando que a remocao foi feita com sucesso
-            marca o segundo campo com * 
-            marca o endereco que tinha no header
-            muda o endereco do header para o endereco desse registro
-            removido = true
-    se removido = false
-        printa falando que nao foi possivel localizar chave
-    */
-
-}
-
-void Compress()
-{
-
-}
 
 int main(int argc, char const *argv[])
 {
@@ -116,7 +50,6 @@ int main(int argc, char const *argv[])
     //fecha remove.bin
 
     KEY* removeData;
-
 
     //le o arquivo DataResult.bin
         //recebe as 2 infos do header sobre os vetores 
