@@ -15,3 +15,54 @@ int Verifica(int address, int size)
     return result
     */
 }
+
+//Roubei funcoes prontas que usei nos exercicios da aula 3: 
+//pra gerar essa documentacao daora to usando o vscode com a extensao "Doxygen Documentation Generator" (pra fazer só escrever /** >:D) 
+
+/**
+ * @brief Read the first byte of a register to know the size in bytes of that register (that moves the position indicator 1 byte forward)
+ * 
+ * @param file File to read
+ * @return int Size of register in int
+ */
+int registerSize(FILE* file)
+{
+    char size;
+
+    fread(&size, sizeof(char), 1, file);
+
+    return (int)size;
+  
+}
+
+/**
+ * @brief Breaks a string using a char "#" to separate the fields of Info, in the same time, prints the field on console.
+ * 
+ * @param string string to be broken.
+ */
+void fields(char* string)
+{
+
+    KEY Id;
+    char ClientName[50];
+    char MovieName[50];
+    char Genre[50];
+
+    char* idk;
+
+    idk = strtok(string,"#");
+    printf("Client Id: %s\n", idk);
+
+    idk = strtok(NULL,"#");
+    printf("Movie Id: %s\n", idk);
+
+    idk = strtok(NULL,"#");
+    printf("Client Name: %s\n", idk);
+
+    idk = strtok(NULL,"#");
+    printf("Movie Name: %s\n", idk);
+
+    idk = strtok(NULL,"#");
+    printf("Genre: %s\n\n", idk);
+
+}
