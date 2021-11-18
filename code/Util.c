@@ -43,26 +43,21 @@ int registerSize(FILE* file)
 void fields(char* string)
 {
 
-    KEY Id;
-    char ClientName[50];
-    char MovieName[50];
-    char Genre[50];
+    char* field;
 
-    char* idk;
+    field = strtok(string,"#");
+    printf("Client Id: %s\n", field);
 
-    idk = strtok(string,"#");
-    printf("Client Id: %s\n", idk);
+    field = strtok(NULL,"#");
+    printf("Movie Id: %s\n", field);
 
-    idk = strtok(NULL,"#");
-    printf("Movie Id: %s\n", idk);
+    field = strtok(NULL,"#");
+    printf("Client Name: %s\n", field);
 
-    idk = strtok(NULL,"#");
-    printf("Client Name: %s\n", idk);
+    field = strtok(NULL,"#");
+    printf("Movie Name: %s\n", field);
 
-    idk = strtok(NULL,"#");
-    printf("Movie Name: %s\n", idk);
-
-    idk = strtok(NULL,"#");
-    printf("Genre: %s\n\n", idk);
+    field = strtok(NULL,"#");
+    printf("Genre: %s\n\n", field);
 
 }
