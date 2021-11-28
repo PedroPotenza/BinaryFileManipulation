@@ -37,7 +37,6 @@ int main(int argc, char const *argv[])
     
     //le o arquivo insere.bin
     FILE* file;
-    FILE* file2;
     if ((file = fopen("insere.bin", "rb")) == NULL)
     {
         printf("The file cannot be open.");
@@ -59,21 +58,23 @@ int main(int argc, char const *argv[])
     fread(insertData, sizeof(REGISTER), insertSize, file);
     fclose(file);
     
-    if ((file2 = fopen("remove.bin", "rb")) == NULL)
-    {
-        printf("The file cannot be open.");
-        return 0;
-    }
-
-    KEY* removeData;
-    int removeSize = 0;
     
-    printf("\nhere");
-    while(fread(removeData, sizeof(KEY), 1, file2))
-    {
-        printf("%d", removeSize);
-        removeSize++;
-    }
+    // FILE* file2;
+    // if ((file2 = fopen("teste.bin", "rb")) == NULL)
+    // {
+    //     printf("The file cannot be open.");
+    //     return 0;
+    // }
+
+    // KEY* removeData;
+    // int removeSize = 0;
+    
+    // printf("\nhere");
+    // while(fread(removeData, sizeof(KEY), 1, file2)) {
+    //     printf("\n%d", removeSize);
+    //     removeSize++;
+    // }
+    // printf("%d", removeSize);
     
     // rewind(file);
 
