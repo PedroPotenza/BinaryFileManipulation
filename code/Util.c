@@ -14,6 +14,7 @@ int Verifica(int address, int size)
             result = verifica (o proximo)
     return result
     */
+   return 1;
 }
 
 //Roubei funcoes prontas que usei nos exercicios da aula 3: 

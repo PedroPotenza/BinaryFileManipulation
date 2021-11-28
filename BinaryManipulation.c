@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "code/Insert.c"
 #include "code/Remove.c"
@@ -48,32 +49,18 @@ int main(int argc, char const *argv[])
     while(fread(insertData, sizeof(REGISTER), 1, file))
     {
         insertSize++;
-        
     }
 
     rewind(file);
 
-    insertData = (REGISTER *) malloc(insertSize * sizeof(REGISTER));
+    insertData = (REGISTER*) malloc(insertSize * sizeof(REGISTER));
 
-    for (int i = 0; i < insertSize; i++)
-    {
-        REGISTER registerLocal;
-        fread(&registerLocal, sizeof(REGISTER), 1, file);
+    fread(insertData, sizeof(REGISTER), insertSize, file);
 
-        insertData[i] = registerLocal;
-    }
+    printf("%s", insertData[2].MovieName);
+
+    printf("%d", insertSize);
     
-
-    for (int i = 0; i < insertSize; i++)
-    {
-        printf("%d", insertData[i].Id.ClientId);
-
-    }
-    
-
-        
-        
-    //fecha insere.bin
 
     
 

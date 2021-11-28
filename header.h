@@ -8,7 +8,8 @@ typedef struct s_Key {
 
 typedef struct s_Register {
     
-    KEY Id;
+    int ClientId;
+    int MovieId;
     char ClientName[50];
     char MovieName[50];
     char Genre[50];
