@@ -57,9 +57,12 @@ int main(int argc, char const *argv[])
 
     fread(insertData, sizeof(REGISTER), insertSize, file);
 
-    printf("%s", insertData[2].MovieName);
 
     printf("%d", insertSize);
+
+    for(int i = 0; i < insertSize; i++) {
+        printf("%s\n", insertData[i].MovieName);
+    }
     
 
     
