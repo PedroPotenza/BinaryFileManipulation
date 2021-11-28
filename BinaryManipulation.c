@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "code/Insert.c"
 #include "code/Remove.c"
@@ -34,22 +35,54 @@ int main(int argc, char const *argv[])
 {
     
     //le o arquivo insere.bin
-        //verifica quantos inserts tem la dentro
-        //salva isso em insertSize
-        //aloca o vetor com insertSize 
-        //preenche o vetor insertData[]
-    //fecha insere.bin
+    FILE* file;
+    if ((file = fopen("insere.bin", "rb")) == NULL)
+    {
+        printf("The file cannot be open.");
+        return 0;
+    }
 
     REGISTER* insertData;
-    int exemple = 2;
-    insertData = (REGISTER *) malloc(exemple * sizeof(REGISTER));
+    int insertSize = 0;
+    
+    while(fread(insertData, sizeof(REGISTER), 1, file))
+    {
+        insertSize++;
+        
+    }
+
+    rewind(file);
+
+    insertData = (REGISTER *) malloc(insertSize * sizeof(REGISTER));
+
+    for (int i = 0; i < insertSize; i++)
+    {
+        REGISTER registerLocal;
+        fread(&registerLocal, sizeof(REGISTER), 1, file);
+
+        insertData[i] = registerLocal;
+    }
+    
+
+    for (int i = 0; i < insertSize; i++)
+    {
+        printf("%d", insertData[i].Id.ClientId);
+
+    }
+    
+
+        
+        
+    //fecha insere.bin
+
+    
 
     
     //le o arquivo remove.bin
         //preenche o vetor removeData[]
     //fecha remove.bin
 
-    KEY* removeData;
+    // KEY* removeData;
 
     //le o arquivo DataResult.bin
         //recebe as 2 infos do header sobre os vetores 
@@ -75,12 +108,12 @@ int main(int argc, char const *argv[])
         switch (option)
         {
         case 1:
-            Insert(/*insertData[posicao_para_inserir]*/);
+            //Insert(/*insertData[posicao_para_inserir]*/);
             posicao_para_inserir++;
             break;
 
         case 2:
-            Remove(/*removeData[posicao_para_remover]*/);
+            //Remove(/*removeData[posicao_para_remover]*/);
             posicao_para_remover++;
             break;
 
