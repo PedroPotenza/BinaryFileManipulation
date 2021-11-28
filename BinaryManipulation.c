@@ -34,7 +34,19 @@
 
 int main(int argc, char const *argv[])
 {
-    
+    FILE* resultFIle;
+    if ((resultFIle = fopen("dataResult.bin", "w+b")) == NULL)
+    {
+        printf("The result file cannot be open.");
+        return 0;
+    }
+
+    int vetor[3] = {0, 0, 0};
+
+    fwrite(&vetor, 1, sizeof(vetor), resultFIle);
+
+    fclose(resultFIle);
+
     //le o arquivo insere.bin
     FILE* file;
     if ((file = fopen("insere.bin", "rb")) == NULL)
@@ -58,7 +70,7 @@ int main(int argc, char const *argv[])
     fread(insertData, sizeof(REGISTER), insertSize, file);
     fclose(file);
     
-    
+
     // FILE* file2;
     // if ((file2 = fopen("teste.bin", "rb")) == NULL)
     // {
