@@ -90,15 +90,23 @@ int main(int argc, char const *argv[])
         //preenche o vetor removeData[]
     //fecha remove.bin
 
-    // KEY* removeData;
+    if ((file = fopen("dataResult.bin", "rb")) == NULL)
+    {
+        printf("The result file cannot be open.");
+        return 0;
+    }
 
-    //le o arquivo DataResult.bin
-        //recebe as 2 infos do header sobre os vetores 
-        //posicao_para_inserir = segundo campo do header
-        //posicao_para_remover = terceiro campo do header
+    int inseridos = 0;
+    int removidos = 0;
 
-    int posicao_para_inserir = 0;
-    int posicao_para_remover = 0;
+    fseek(file, sizeof(int), SEEK_SET);
+    fread(&inseridos, sizeof(int), 1, file);
+    fread(&removidos, sizeof(int), 1, file);
+
+    printf("%d", inseridos);
+    printf("%d", removidos);
+
+    fclose(file);
 
     printf("--------- MENU ---------\n");
     printf(" (1) - Inserir Registro\n");
@@ -116,13 +124,11 @@ int main(int argc, char const *argv[])
         switch (option)
         {
         case 1:
-            //Insert(/*insertData[posicao_para_inserir]*/);
-            posicao_para_inserir++;
+            Insert(insertData[inseridos]);
             break;
 
         case 2:
             //Remove(/*removeData[posicao_para_remover]*/);
-            posicao_para_remover++;
             break;
 
         case 3:
