@@ -38,7 +38,7 @@ int main(int argc, char const *argv[])
     FILE* file;
     if ((file = fopen("insere.bin", "rb")) == NULL)
     {
-        printf("The file cannot be open.");
+        printf("The insere file cannot be open.");
         return 0;
     }
 
@@ -50,26 +50,19 @@ int main(int argc, char const *argv[])
     fread(insertData, sizeof(REGISTER), insertSize, file);
     fclose(file);
     
-    // if ((file = fopen("teste.bin", "rb")) == NULL)
-    // {
-    //     printf("The file cannot be open.");
-    //     return 0;
-    // }
+    if ((file = fopen("remove.bin", "rb")) == NULL)
+    {
+        printf("The remove file cannot be open.");
+        return 0;
+    }
 
-    // KEY* removeData;
-    // int removeSize = 0;
- 
-    // while(fread(removeData, sizeof(KEY), 1, file)) {
-    //     removeSize++;
-    // }
-    // printf("%d", removeSize);
+    KEY* removeData;
+    int removeSize = 3;
     
-    // rewind(file);
-    // removeData = (KEY*) malloc(removeSize * sizeof(KEY));
+    removeData = (KEY*) malloc(removeSize * sizeof(KEY));
     
-    // fread(removeData, sizeof(KEY), removeSize, file);
-
-    // fclose(file)
+    fread(removeData, sizeof(KEY), removeSize, file);
+    fclose(file);
 
     if ((file = fopen("dataResult.bin", "rb")) == NULL)
     {
@@ -121,7 +114,19 @@ int main(int argc, char const *argv[])
             break;
 
         case 2:
-            //Remove(/*removeData[posicao_para_remover]*/);
+            Remove(removeData[removidos]);
+            removidos++;
+            printf("\nRemovidos para escrever: %d\n", removidos);
+            
+            if ((file = fopen("dataResult.bin", "r+b")) == NULL)
+            {
+                printf("The result file cannot be open.");
+                return 0;
+            }
+            rewind(file);
+            fseek(file, 8, SEEK_SET);
+            fwrite(&removidos, 1, sizeof(int), file);
+            fclose(file);
             break;
 
         case 3:
