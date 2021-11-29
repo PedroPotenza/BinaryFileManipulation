@@ -84,8 +84,8 @@ int main(int argc, char const *argv[])
     fread(&inseridos, sizeof(int), 1, file);
     fread(&removidos, sizeof(int), 1, file);
 
-    printf("%d", inseridos);
-    printf("%d", removidos);
+    printf("Inseridos: %d\n", inseridos);
+    printf("Removidos: %d\n", removidos);
 
     fclose(file);
 
