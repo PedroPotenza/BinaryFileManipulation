@@ -43,14 +43,7 @@ int main(int argc, char const *argv[])
     }
 
     REGISTER* insertData;
-    int insertSize = 0;
-    
-    while(fread(insertData, sizeof(REGISTER), 1, file))
-    {
-        insertSize++;
-    }
-
-    rewind(file);
+    int insertSize = 4;
 
     insertData = (REGISTER*) malloc(insertSize * sizeof(REGISTER));
 
