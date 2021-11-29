@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
- int findAdressToFit(int adressToSee, int registerSize, FILE* file){
+int findAdressToFit(int adressToSee, int registerSize, FILE* file){
 
     if(adressToSee == 0)
         return 0;
@@ -62,7 +62,6 @@ void Insert(REGISTER registerData)
     fwrite(&registerData.MovieName, 1, strlen(registerData.MovieName), resultFile);
     fwrite(&divider, 1, sizeof(divider), resultFile);
     fwrite(&registerData.Genre, 1, strlen(registerData.Genre), resultFile);
-    fwrite(&divider, 1, sizeof(divider), resultFile);
 
     if(registerAdress != 0)
         printf("Registro adicionado no byte %d do arquivo!", registerAdress);
