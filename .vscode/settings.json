@@ -3,6 +3,7 @@
         "!c"
     ],
     "files.associations": {
-        "binarymanipulation": "c"
+        "binarymanipulation": "c",
+        "string.h": "c"
     }
 }

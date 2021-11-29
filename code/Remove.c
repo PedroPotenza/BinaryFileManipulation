@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-void Remove(KEY key)
+int Remove(KEY key)
 {
     /*
     recebe a chave a ser removida “CodCli+CodF”
@@ -21,4 +21,66 @@ void Remove(KEY key)
     fecha DataResult.bin
     */
 
+   FILE* resultFile;
+
+    if ((resultFile = fopen("dataResult.bin", "r+b")) == NULL)
+    {
+        printf("The result file cannot be open.");
+        return 0;
+    }
+    //Cabeçalho
+    int offset;
+    fread(&offset, sizeof(int), 1, resultFile);
+
+    fseek(resultFile, 2 * sizeof(int), SEEK_CUR);
+
+    int exist = 1;
+
+    KEY readKey;
+
+    do {
+        int size;
+        fread(&size, sizeof(int), 1, resultFile);
+
+        if(size == 0){
+            exist = 0;
+            break;
+        }
+
+        char mark;
+        fread(&mark, sizeof(char), 1, resultFile);
+
+        if(mark == '*'){
+            fseek(resultFile, size, SEEK_CUR);
+            continue;
+        }
+
+        fread(&readKey.ClientId, sizeof(int), 1, resultFile);
+        fseek(resultFile, 1, SEEK_CUR);
+        fread(&readKey.MovieId, sizeof(int), 1, resultFile);
+
+        if(readKey.ClientId == key.ClientId || readKey.MovieId == key.MovieId) {
+
+            printf("Registro Removido com sucesso!\n");
+
+            fseek(resultFile, -(2*sizeof(int)), SEEK_CUR);
+            char removedMark = '*';
+            fwrite(&removedMark, 1, sizeof(char), resultFile);
+            fwrite(&offset, 1, sizeof(int), resultFile);
+            
+            fseek(resultFile, 9, SEEK_CUR);
+            int adress = ftell(resultFile);
+
+            rewind(resultFile);
+            fwrite(&adress, 1, sizeof(int), resultFile);
+            fclose(resultFile);
+
+            exist = 0;
+            return 1;
+        }
+
+    } while (exist);
+    
+    printf("Nao foi possivel localizar tal chave!\n");
+    return 0;
 }

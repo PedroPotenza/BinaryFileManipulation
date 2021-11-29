@@ -38,7 +38,6 @@ void Insert(REGISTER registerData)
         printf("The result file cannot be open.");
         return;
     }
-    rewind(resultFile);
 
     int registerSize = sizeof(registerData) + 6*sizeof(char); //+ char pq falta contar a marca
 

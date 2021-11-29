@@ -114,19 +114,20 @@ int main(int argc, char const *argv[])
             break;
 
         case 2:
-            Remove(removeData[removidos]);
-            removidos++;
-            printf("\nRemovidos para escrever: %d\n", removidos);
-            
-            if ((file = fopen("dataResult.bin", "r+b")) == NULL)
-            {
-                printf("The result file cannot be open.");
-                return 0;
+            if (Remove(removeData[removidos]) == 1) {
+                removidos++;
+                printf("\nRemovidos para escrever: %d\n", removidos);
+                
+                if ((file = fopen("dataResult.bin", "r+b")) == NULL)
+                {
+                    printf("The result file cannot be open.");
+                    return 0;
+                }
+                rewind(file);
+                fseek(file, 8, SEEK_SET);
+                fwrite(&removidos, 1, sizeof(int), file);
+                fclose(file);
             }
-            rewind(file);
-            fseek(file, 8, SEEK_SET);
-            fwrite(&removidos, 1, sizeof(int), file);
-            fclose(file);
             break;
 
         case 3:

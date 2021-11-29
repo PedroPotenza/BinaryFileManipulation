@@ -15,7 +15,7 @@ typedef struct s_Register {
 } REGISTER;
 
 void Insert(REGISTER registerData);
-void Remove(KEY key);
+int Remove(KEY key);
 void Compress();
 int Verifica(int address, int size);
 
