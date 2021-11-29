@@ -109,13 +109,13 @@ int main(int argc, char const *argv[])
             inseridos++;
             printf("\nInseridos para escrever: %d\n", inseridos);
             
-            if ((file = fopen("dataResult.bin", "rb")) == NULL)
+            if ((file = fopen("dataResult.bin", "r+b")) == NULL)
             {
                 printf("The result file cannot be open.");
                 return 0;
             }
-            
-            fseek(file, sizeof(int), SEEK_SET);
+            rewind(file);
+            fseek(file, 4, SEEK_SET);
             fwrite(&inseridos, 1, sizeof(int), file);
             fclose(file);
             break;
