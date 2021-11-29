@@ -12,8 +12,8 @@ int findAdressToFit(int adressToSee, int registerSize, FILE* file){
     int localSize;
     fread(&localSize, sizeof(int), 1, file);
 
-    if(localSize < registerSize){
-        return adressToSee;
+    if(localSize >= registerSize){
+        return adressToSee - 18;
     } else {
         
         fseek(file, sizeof(char), SEEK_CUR);
