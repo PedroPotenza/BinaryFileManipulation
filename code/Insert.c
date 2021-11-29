@@ -33,11 +33,12 @@ void Insert(REGISTER registerData)
     
     FILE* resultFile;
 
-    if ((resultFile = fopen("dataResult.bin", "wb+")) == NULL)
+    if ((resultFile = fopen("dataResult.bin", "ab")) == NULL)
     {
         printf("The result file cannot be open.");
         return;
     }
+    rewind(resultFile);
 
     int registerSize = sizeof(registerData) + 6*sizeof(char); //+ char pq falta contar a marca
 
@@ -70,4 +71,3 @@ void Insert(REGISTER registerData)
 
     fclose(resultFile);
 }
-

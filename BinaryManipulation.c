@@ -107,8 +107,17 @@ int main(int argc, char const *argv[])
         case 1:
             Insert(insertData[inseridos]);
             inseridos++;
+            printf("\nInseridos para escrever: %d\n", inseridos);
+            
+            if ((file = fopen("dataResult.bin", "rb")) == NULL)
+            {
+                printf("The result file cannot be open.");
+                return 0;
+            }
+            
             fseek(file, sizeof(int), SEEK_SET);
-            fwrite(&inseridos, 1, sizeof(int),file);
+            fwrite(&inseridos, 1, sizeof(int), file);
+            fclose(file);
             break;
 
         case 2:
