@@ -38,10 +38,10 @@ int Remove(KEY key)
 
     KEY readKey;
 
-    do {
-        int size;
-        fread(&size, sizeof(int), 1, resultFile);
+    int size;
 
+    while(fread(&size, sizeof(int), 1, resultFile)){
+        
         if(size == 0){
             exist = 0;
             break;
@@ -68,7 +68,7 @@ int Remove(KEY key)
             fwrite(&removedMark, 1, sizeof(char), resultFile);
             fwrite(&offset, 1, sizeof(int), resultFile);
             
-            fseek(resultFile, 9, SEEK_CUR);
+            fseek(resultFile, -9, SEEK_CUR);
             int adress = ftell(resultFile);
 
             rewind(resultFile);
@@ -79,7 +79,7 @@ int Remove(KEY key)
             return 1;
         }
 
-    } while (exist);
+    }
     
     printf("Nao foi possivel localizar tal chave!\n");
     return 0;

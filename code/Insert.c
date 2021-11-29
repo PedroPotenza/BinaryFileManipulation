@@ -13,7 +13,7 @@ int findAdressToFit(int adressToSee, int registerSize, FILE* file){
     fread(&localSize, sizeof(int), 1, file);
 
     if(localSize >= registerSize){
-        return adressToSee - 18;
+        return adressToSee;
     } else {
         fseek(file, sizeof(char), SEEK_CUR);
         int newAdressToSee;
@@ -47,8 +47,14 @@ void Insert(REGISTER registerData)
     int registerAdress = findAdressToFit(offset, registerSize, resultFile);
     if (registerAdress == 0)
         fseek(resultFile, 0, SEEK_END);
-    else
+    else {
+        fseek(resultFile, registerAdress + sizeof(int) + sizeof(char), SEEK_SET);
+        int newOffset;
+        fread(&newOffset, sizeof(int), 1, resultFile);
+        rewind(resultFile);
+        fwrite(&newOffset, 1, sizeof(int), resultFile);
         fseek(resultFile, registerAdress, SEEK_SET);
+    }
 
     fwrite(&registerSize, 1, sizeof(int), resultFile);
     fwrite(&realMarker, 1, sizeof(char), resultFile);
