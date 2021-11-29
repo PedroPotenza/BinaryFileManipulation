@@ -57,9 +57,7 @@ int main(int argc, char const *argv[])
     fread(insertData, sizeof(REGISTER), insertSize, file);
     fclose(file);
     
-
-    // FILE* file2;
-    // if ((file2 = fopen("teste.bin", "rb")) == NULL)
+    // if ((file = fopen("teste.bin", "rb")) == NULL)
     // {
     //     printf("The file cannot be open.");
     //     return 0;
@@ -67,28 +65,18 @@ int main(int argc, char const *argv[])
 
     // KEY* removeData;
     // int removeSize = 0;
-    
-    // printf("\nhere");
-    // while(fread(removeData, sizeof(KEY), 1, file2)) {
-    //     printf("\n%d", removeSize);
+ 
+    // while(fread(removeData, sizeof(KEY), 1, file)) {
     //     removeSize++;
     // }
     // printf("%d", removeSize);
     
     // rewind(file);
-
     // removeData = (KEY*) malloc(removeSize * sizeof(KEY));
-
+    
     // fread(removeData, sizeof(KEY), removeSize, file);
 
-    // for(int i = 0; i < removeSize; i++) {
-    //     printf("%d\n", removeData[i].ClientId);
-    // }
-
-
-    //le o arquivo remove.bin
-        //preenche o vetor removeData[]
-    //fecha remove.bin
+    // fclose(file)
 
     if ((file = fopen("dataResult.bin", "rb")) == NULL)
     {
@@ -125,6 +113,9 @@ int main(int argc, char const *argv[])
         {
         case 1:
             Insert(insertData[inseridos]);
+            inseridos++;
+            fseek(file, sizeof(int), SEEK_SET);
+            fwrite(&inseridos, 1, sizeof(int),file);
             break;
 
         case 2:
