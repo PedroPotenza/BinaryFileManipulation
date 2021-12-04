@@ -82,8 +82,8 @@ void Compress()
         fseek(fileRead, sizeof(char), SEEK_CUR); // le o pipe
         fread(&mark, sizeof(char), 1, fileRead); // le a marca
 
-        // printf("\nMark: %c -> Real %c\n", mark, realMarker);
-        // printf("FTELL = %ld", ftell(fileRead));
+        printf("\nMark: %c -> Real %c\n", mark, realMarker);
+        printf("FTELL = %ld", ftell(fileRead));
 
         if(mark == realMarker){ //se o registro é valido
 
@@ -124,8 +124,7 @@ void Compress()
             if(!fread(&seeIfHaveAnotherRegister, sizeof(int), 1, fileRead)){
                 break;
             }
-            
-            fseek(fileRead, sizeof(int), SEEK_CUR);
+            fseek(fileRead, -sizeof(char), SEEK_CUR);
 
             MoveToNextField(fileRead); // le o lixo 
             printf("\nRegistro adicionado no arquivo temporario!\n");
@@ -153,19 +152,5 @@ void Compress()
     } else {
         printf("\nNão foi possivel renomear Temp.bin para dataResult.bin!\n");
     }
-    /*
-    Abre DataResult.bin como leitura 
-    Abre Temp.bin como criar + escrita
-    do
-        size = le o primeiro campo do registro
-        valid = le o segundo campo do registro 
-        se valid é $ (valido)
-            escreve o registro no arquivo temporario
-        se valid é * (invalido)
-            pula esse registro usando o size 
-    while(size != 0)
-    deleta DataResult.bin
-    renomeia o Temp.bin para DataResult.bin
-    printa falando que o arquivo foi comprimido 
-    */
+    
 }
