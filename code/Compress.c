@@ -26,10 +26,8 @@ int ReadField(char* string, FILE* fileRead){
 void MoveToNextField(FILE* fileRead){
 
     char unit;
-    printf("\n----\n");
 
     while(fread(&unit, sizeof(char), 1, fileRead)){ //le byte por byte até achar o pipe
-        printf("%c", unit);
         if(unit == '|') 
             break;
     }
@@ -37,7 +35,6 @@ void MoveToNextField(FILE* fileRead){
     fseek(fileRead, -sizeof(int), SEEK_CUR);  //como o pipe ta depois do size, devemos voltar sua posição
     fseek(fileRead, -sizeof(char), SEEK_CUR); //como o pipe foi lido, devemos voltar sua posição
 
-    printf("\n----\n");
 }
 
 void Compress()
@@ -77,16 +74,16 @@ void Compress()
     char mark;
     char field[50];
     int fieldSize;
-    int g = 0;
+    // int g = 0;
 
     while(fread(&size, sizeof(int), 1, fileRead)){ //le o tamanho
-        printf("\niteracao %d\n", g);
+        // printf("\niteracao %d\n", g);
 
         fseek(fileRead, sizeof(char), SEEK_CUR); // le o pipe
         fread(&mark, sizeof(char), 1, fileRead); // le a marca
 
-        printf("\nMark: %c -> Real %c\n", mark, realMarker);
-        printf("FTELL = %ld", ftell(fileRead));
+        // printf("\nMark: %c -> Real %c\n", mark, realMarker);
+        // printf("FTELL = %ld", ftell(fileRead));
 
         if(mark == realMarker){ //se o registro é valido
 
@@ -122,6 +119,14 @@ void Compress()
             fwrite(&field, 1, fieldSize, fileWrite);
             fwrite(&divider, 1, sizeof(divider), fileWrite);
 
+            int seeIfHaveAnotherRegister;
+
+            if(!fread(&seeIfHaveAnotherRegister, sizeof(int), 1, fileRead)){
+                break;
+            }
+            
+            fseek(fileRead, sizeof(int), SEEK_CUR);
+
             MoveToNextField(fileRead); // le o lixo 
             printf("\nRegistro adicionado no arquivo temporario!\n");
 
@@ -130,12 +135,24 @@ void Compress()
             printf("\nRegistro excluido do temporario!\n");
             MoveToNextField(fileRead);
         }
-        g++;
+        // g++;
     };
     
-
     fclose(fileRead);
     fclose(fileWrite);
+
+    if (remove("dataResult.bin") == 0) {
+        printf("\ndataResult.bin deletado!");
+    } else {
+        printf("\n Nao foi possivel deletar dataResult.bin!");
+    }
+
+    int result = rename("Temp.bin", "dataResult.bin");
+    if (result == 0) {
+        printf("\nTemp.bin renomeado com sucesso para dataResult.bin!\n");
+    } else {
+        printf("\nNão foi possivel renomear Temp.bin para dataResult.bin!\n");
+    }
     /*
     Abre DataResult.bin como leitura 
     Abre Temp.bin como criar + escrita
