@@ -26,16 +26,17 @@ int ReadField(char* string, FILE* fileRead){
 void MoveToNextField(FILE* fileRead){
 
     char unit;
-    int i = 0;
+    printf("\n----\n");
 
     while(fread(&unit, sizeof(char), 1, fileRead)){
-        
+        printf("%c", unit);
         if(unit == '|')
-            fseek(fileRead, -sizeof(char), SEEK_CUR);
             fseek(fileRead, -sizeof(int), SEEK_CUR);
+            fseek(fileRead, -sizeof(char), SEEK_CUR);
             break;
-        i++;    
     }
+
+    printf("\n----\n");
 }
 
 void Compress()
@@ -60,12 +61,12 @@ void Compress()
         return;
     }
 
-    int data;
     fseek(fileRead, sizeof(int), SEEK_SET);
     
-        int x = 0;
-        fwrite(&x, 1, sizeof(int), fileWrite);
-    
+    int offset = 0;
+    fwrite(&offset, 1, sizeof(int), fileWrite);
+
+    int data;
     fread(&data, sizeof(int), 1, fileRead);
     fwrite(&data, 1, sizeof(int), fileWrite);
     fread(&data, sizeof(int), 1, fileRead);
@@ -80,10 +81,12 @@ void Compress()
     while(fread(&size, sizeof(int), 1, fileRead)){
         printf("\niteracao %d\n", g);
 
+        fseek(fileRead, sizeof(char), SEEK_CUR);
         fread(&mark, sizeof(char), 1, fileRead);
+
+        printf("\nMark: %c -> Real %c\n", mark, realMarker);
         printf("FTELL = %ld", ftell(fileRead));
-        
-        printf("Mark: %c -> Real %c", mark, realMarker);
+
         if(mark == realMarker){
             fwrite(&size, 1, sizeof(int), fileWrite);
             fwrite(&initializer, 1, sizeof(divider), fileWrite);
@@ -117,16 +120,14 @@ void Compress()
             fwrite(&field, 1, fieldSize, fileWrite);
             fwrite(&divider, 1, sizeof(divider), fileWrite);
 
-            printf("\nRegistro adicionado no arquivo temporario!\n");
             MoveToNextField(fileRead);
+            printf("\nRegistro adicionado no arquivo temporario!\n");
 
         } else {
-
-            fseek(fileRead, size-1, SEEK_CUR);
+            fseek(fileRead, size-2, SEEK_CUR);
             printf("\nRegistro excluido do temporario!\n");
-
+            MoveToNextField(fileRead);
         }
-        
         g++;
     };
     
