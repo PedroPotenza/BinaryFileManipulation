@@ -7,6 +7,21 @@
 #define true 1;
 #define false 0;
 
+int ReadField(char* string, FILE* fileRead){
+
+    char unit;
+    int i = 0;
+
+    while(fread(&unit, sizeof(char), 1, fileRead)){
+        
+        if(unit == '#')
+            return i;
+
+        string[i] = unit;
+        i++;    
+    }
+}
+
 void Compress()
 {
     FILE* fileRead;
@@ -28,18 +43,24 @@ void Compress()
         return;
     }
 
-    int data[3];
-
-    fread(data, sizeof(int), 3, fileRead);
-    fwrite(&data, 3, sizeof(int), fileWrite);
+    int data;
+    fseek(fileRead, sizeof(int), SEEK_SET);
+    
+        int x = 0;
+        fwrite(&x, 1, sizeof(int), fileWrite);
+    
+    fread(&data, sizeof(int), 1, fileRead);
+    fwrite(&data, 1, sizeof(int), fileWrite);
+    fread(&data, sizeof(int), 1, fileRead);
+    fwrite(&data, 1, sizeof(int), fileWrite);
 
     int size;
     char mark;
+    char field[50];
+    int fieldSize;
 
     while(fread(&size, sizeof(int), 1, fileRead)){
-        
-        if(size == 0)
-            break;
+        printf("iteracao");
 
         fread(&mark, sizeof(char), 1, fileRead);
         
@@ -47,26 +68,32 @@ void Compress()
             fwrite(&size, 1, sizeof(int), fileWrite);
             fwrite(&mark, 1, sizeof(char), fileWrite);
 
-            REGISTER registerData;
+            int key;
 
-            fread(&registerData.Id.ClientId, sizeof(int), 1, fileRead);
-            fwrite(&registerData.Id.ClientId, 1, sizeof(int), fileWrite);
+            fread(&key, sizeof(int), 1, fileRead);
+            fwrite(&key, 1, sizeof(int), fileWrite);
             fwrite(&divider, 1, sizeof(divider), fileWrite);
 
-            fread(&registerData.Id.MovieId, sizeof(int), 1, fileRead);
-            fwrite(&registerData.Id.MovieId, 1, sizeof(int), fileWrite);
+            fseek(fileRead, sizeof(char), SEEK_CUR); //cuidado com o divider do fileRead
+            fread(&key, sizeof(int), 1, fileRead);
+            fwrite(&key, 1, sizeof(int), fileWrite);
             fwrite(&divider, 1, sizeof(divider), fileWrite);
 
-            fread(&registerData.ClientName, sizeof(int), 1, fileRead);
-            fwrite(&registerData.ClientName, 1, strlen(registerData.ClientName), fileWrite);
+            fseek(fileRead, sizeof(char), SEEK_CUR); //cuidado com o divider do fileRead
+
+            fieldSize = ReadField(field, fileRead);
+
+            fwrite(&field, 1, fieldSize, fileWrite);
             fwrite(&divider, 1, sizeof(divider), fileWrite);
 
-            fread(&registerData.MovieName, sizeof(int), 1, fileRead);
-            fwrite(&registerData.MovieName, 1, strlen(registerData.MovieName), fileWrite);
+            fieldSize = ReadField(field, fileRead);
+
+            fwrite(&field, 1, fieldSize, fileWrite);
             fwrite(&divider, 1, sizeof(divider), fileWrite);
 
-            fread(&registerData.Genre, sizeof(int), 1, fileRead);
-            fwrite(&registerData.Genre, 1, strlen(registerData.Genre), fileWrite);
+            fieldSize = ReadField(field, fileRead);
+
+            fwrite(&field, 1, fieldSize, fileWrite);
 
             printf("\nRegistro adicionado no arquivo temporario!\n");
 
@@ -77,10 +104,12 @@ void Compress()
 
         }
 
-        fclose(fileRead);
-        fclose(fileWrite);
+        
     };
     
+
+    fclose(fileRead);
+    fclose(fileWrite);
     /*
     Abre DataResult.bin como leitura 
     Abre Temp.bin como criar + escrita

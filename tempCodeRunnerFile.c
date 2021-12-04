@@ -1,13 +1,5 @@
-REGISTER* insertData;
-    // int insertSize = 0;
-    
-    // while(fread(insertData, sizeof(REGISTER), 1, file))
-    // {
-    //     insertSize++;
-    // }
 
-    // rewind(file);
+    REGISTER* insertData;
+    int insertSize = 4;
 
-    // insertData = (REGISTER*) malloc(insertSize * sizeof(REGISTER));
-
-    // fread(insertData, sizeof(REGISTER), insertSize, file);
+    insertData = (REGISTER*) malloc(insertSize * sizeof(REGISTER));
