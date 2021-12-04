@@ -15,7 +15,7 @@ int findAdressToFit(int adressToSee, int registerSize, FILE* file){
     if(localSize >= registerSize){
         return adressToSee;
     } else {
-        fseek(file, sizeof(char), SEEK_CUR);
+        fseek(file, 2 * sizeof(char), SEEK_CUR);
         int newAdressToSee;
         fread(&newAdressToSee, sizeof(int), 1, file);
         return findAdressToFit(newAdressToSee, registerSize, file);
@@ -27,6 +27,7 @@ void Insert(REGISTER registerData)
 {
     char realMarker = '$';
     char removedMarker = '*';
+    char initializer = '|';
     char divider = '#';
 
     
@@ -38,7 +39,7 @@ void Insert(REGISTER registerData)
         return;
     }
 
-    int registerSize = sizeof(registerData) + 7*sizeof(char); //+ char pq falta contar a marca
+    int registerSize = sizeof(registerData) + 8 * sizeof(char); //+ char pq falta contar a marca
 
     int offset = 0;
 
@@ -48,7 +49,7 @@ void Insert(REGISTER registerData)
     if (registerAdress == 0)
         fseek(resultFile, 0, SEEK_END);
     else {
-        fseek(resultFile, registerAdress + sizeof(int) + sizeof(char), SEEK_SET);
+        fseek(resultFile, registerAdress + sizeof(int) + 2 * sizeof(char), SEEK_SET);
         int newOffset;
         fread(&newOffset, sizeof(int), 1, resultFile);
         rewind(resultFile);
@@ -57,6 +58,7 @@ void Insert(REGISTER registerData)
     }
 
     fwrite(&registerSize, 1, sizeof(int), resultFile);
+    fwrite(&initializer, 1, sizeof(initializer), resultFile);
     fwrite(&realMarker, 1, sizeof(char), resultFile);
     fwrite(&registerData.Id.ClientId, 1, sizeof(int), resultFile);
     fwrite(&divider, 1, sizeof(divider), resultFile);

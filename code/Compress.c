@@ -23,6 +23,21 @@ int ReadField(char* string, FILE* fileRead){
     return i;
 }
 
+void MoveToNextField(FILE* fileRead){
+
+    char unit;
+    int i = 0;
+
+    while(fread(&unit, sizeof(char), 1, fileRead)){
+        
+        if(unit == '|')
+            fseek(fileRead, -sizeof(char), SEEK_CUR);
+            fseek(fileRead, -sizeof(int), SEEK_CUR);
+            break;
+        i++;    
+    }
+}
+
 void Compress()
 {
     FILE* fileRead;
@@ -30,6 +45,7 @@ void Compress()
 
     char realMarker = '$';
     char removedMarker = '*';
+    char initializer = '|';
     char divider = '#';
 
     if ((fileRead = fopen("dataResult.bin", "rb")) == NULL)
@@ -65,10 +81,12 @@ void Compress()
         printf("\niteracao %d\n", g);
 
         fread(&mark, sizeof(char), 1, fileRead);
+        printf("FTELL = %ld", ftell(fileRead));
         
         printf("Mark: %c -> Real %c", mark, realMarker);
         if(mark == realMarker){
             fwrite(&size, 1, sizeof(int), fileWrite);
+            fwrite(&initializer, 1, sizeof(divider), fileWrite);
             fwrite(&mark, 1, sizeof(char), fileWrite);
 
             int key;
@@ -100,7 +118,7 @@ void Compress()
             fwrite(&divider, 1, sizeof(divider), fileWrite);
 
             printf("\nRegistro adicionado no arquivo temporario!\n");
-            printf("\nFTELL = %ld \n", ftell(fileRead));
+            MoveToNextField(fileRead);
 
         } else {
 

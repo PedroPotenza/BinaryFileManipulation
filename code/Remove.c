@@ -48,10 +48,11 @@ int Remove(KEY key)
         }
 
         char mark;
+        fseek(resultFile, sizeof(char), SEEK_CUR);
         fread(&mark, sizeof(char), 1, resultFile);
 
         if(mark == '*'){
-            fseek(resultFile, size - 1, SEEK_CUR);
+            fseek(resultFile, size - 2, SEEK_CUR);
             continue;
         }
 
@@ -63,12 +64,12 @@ int Remove(KEY key)
 
             printf("Registro Removido com sucesso!\n");
 
-            fseek(resultFile, -(2*sizeof(int)+2), SEEK_CUR);
+            fseek(resultFile, -(2 * sizeof(int) + 2), SEEK_CUR);
             char removedMark = '*';
             fwrite(&removedMark, 1, sizeof(char), resultFile);
             fwrite(&offset, 1, sizeof(int), resultFile);
             
-            fseek(resultFile, -9, SEEK_CUR);
+            fseek(resultFile, -10, SEEK_CUR);
             int adress = ftell(resultFile);
 
             rewind(resultFile);
