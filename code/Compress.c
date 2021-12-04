@@ -4,13 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define true 1;
-#define false 0;
+#define true 1
+#define false 0
 
 int ReadField(char* string, FILE* fileRead){
 
     char unit;
     int i = 0;
+    
+    /*
+    	fread(size, sizeof(int), 1, file);
+		fread(&reg_str, sizeof(char), 30, file);
+	*/
+    
 
     while(fread(&unit, sizeof(char), 1, fileRead)){
         
@@ -75,11 +81,13 @@ void Compress()
     char field[50];
     int fieldSize;
     // int g = 0;
-
+    char reg_str[512];
+	
     while(fread(&size, sizeof(int), 1, fileRead)){ //le o tamanho
-        // printf("\niteracao %d\n", g);
+        printf("\niteracao %d\n", size);
+        fread(reg_str, sizeof(char), size-4, fileRead);
 
-        fseek(fileRead, sizeof(char), SEEK_CUR); // le o pipe
+       /*fseek(fileRead, sizeof(char), SEEK_CUR); // le o pipe
         fread(&mark, sizeof(char), 1, fileRead); // le a marca
 
         printf("\nMark: %c -> Real %c\n", mark, realMarker);
@@ -133,7 +141,7 @@ void Compress()
             fseek(fileRead, size-2, SEEK_CUR);
             printf("\nRegistro excluido do temporario!\n");
             MoveToNextField(fileRead);
-        }
+        }*/
         // g++;
     };
     

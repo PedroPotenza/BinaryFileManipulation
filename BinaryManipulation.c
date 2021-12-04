@@ -7,8 +7,8 @@
 #include "code/Compress.c"
 #include "code/Util.c"
 
-#define true 1;
-#define false 0;
+#define true 1
+#define false 0
 
 /*
 
@@ -31,16 +31,39 @@
     EXEMPLO: 61$1#1#João da Silva# Indiana Jones e a Última Cruzada#Aventura
 */
 
+FILE * file_open_read(char * filename) {
+	FILE *file = fopen(filename, "rb");
+	
+	if(file == NULL) {
+		printf("The file %s cannot be open.", filename);
+		exit(1);
+	}
+	
+	return file;	
+}
+
+FILE * connect_DB() {
+	char * filename = "dataResult.bin";
+	
+	if(access(filename, F_OK ) == 0)
+		return fopen(filename, "r+b");
+		
+	FILE * file = fopen(filename, "w+b");
+	
+	int ZERO = 0;
+	int LISTA_VAZIA = -1;
+	fwrite(&LISTA_VAZIA, sizeof(int), 1, file);
+	fwrite(&ZERO, sizeof(int), 1, file);
+	fwrite(&ZERO, sizeof(int), 1, file);
+	
+	return file;
+}
+
 
 int main(int argc, char const *argv[])
 {
     //le o arquivo insere.bin
-    FILE* file;
-    if ((file = fopen("insere.bin", "rb")) == NULL)
-    {
-        printf("The insere file cannot be open.");
-        return 0;
-    }
+    FILE* file = file_open_read("insere.bin");
 
     REGISTER* insertData;
     int insertSize = 4;
@@ -50,11 +73,7 @@ int main(int argc, char const *argv[])
     fread(insertData, sizeof(REGISTER), insertSize, file);
     fclose(file);
     
-    if ((file = fopen("remove.bin", "rb")) == NULL)
-    {
-        printf("The remove file cannot be open.");
-        return 0;
-    }
+    file = file_open_read("remove.bin");
 
     KEY* removeData;
     int removeSize = 3;
@@ -63,13 +82,9 @@ int main(int argc, char const *argv[])
     
     fread(removeData, sizeof(KEY), removeSize, file);
     fclose(file);
-
-    if ((file = fopen("dataResult.bin", "rb")) == NULL)
-    {
-        printf("The result file cannot be open.");
-        return 0;
-    }
-
+    
+    file = connect_DB();
+    
     int inseridos = 0;
     int removidos = 0;
 

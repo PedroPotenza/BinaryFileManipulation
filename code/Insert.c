@@ -1,12 +1,14 @@
 #include "../header.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 int findAdressToFit(int adressToSee, int registerSize, FILE* file){
 
-    if(adressToSee == 0)
-        return 0;
+    if(adressToSee == -1)
+        return -1;
 
     fseek(file, adressToSee, SEEK_SET);
     int localSize;
@@ -32,21 +34,21 @@ void Insert(REGISTER registerData)
 
     
     FILE* resultFile;
-
-    if ((resultFile = fopen("dataResult.bin", "r+b")) == NULL)
-    {
-        printf("The result file cannot be open.");
-        return;
-    }
+    
+    if( access("dataResult.bin", F_OK ) == 0 ) {
+	    resultFile = fopen("dataResult.bin", "r+b");
+	} else {
+	    resultFile = fopen("dataResult.bin", "w+b");
+	}
 
     int registerSize = sizeof(registerData) + 8 * sizeof(char); //+ char pq falta contar a marca
-
-    int offset = 0;
+	
+    int offset;
 
     fread(&offset, sizeof(int), 1, resultFile);
 
     int registerAdress = findAdressToFit(offset, registerSize, resultFile);
-    if (registerAdress == 0)
+    if (registerAdress == -1)
         fseek(resultFile, 0, SEEK_END);
     else {
         fseek(resultFile, registerAdress + sizeof(int) + 2 * sizeof(char), SEEK_SET);
@@ -71,7 +73,7 @@ void Insert(REGISTER registerData)
     fwrite(&registerData.Genre, 1, strlen(registerData.Genre), resultFile);
     fwrite(&divider, 1, sizeof(divider), resultFile);
 
-    if(registerAdress != 0)
+    if(registerAdress != -1)
         printf("Registro adicionado no byte %d do arquivo!", registerAdress);
     else
         printf("Registro adicionado no final do arquivo!");
