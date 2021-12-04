@@ -38,7 +38,7 @@ void Insert(REGISTER registerData)
         return;
     }
 
-    int registerSize = sizeof(registerData) + 6*sizeof(char); //+ char pq falta contar a marca
+    int registerSize = sizeof(registerData) + 7*sizeof(char); //+ char pq falta contar a marca
 
     int offset = 0;
 
@@ -67,6 +67,7 @@ void Insert(REGISTER registerData)
     fwrite(&registerData.MovieName, 1, strlen(registerData.MovieName), resultFile);
     fwrite(&divider, 1, sizeof(divider), resultFile);
     fwrite(&registerData.Genre, 1, strlen(registerData.Genre), resultFile);
+    fwrite(&divider, 1, sizeof(divider), resultFile);
 
     if(registerAdress != 0)
         printf("Registro adicionado no byte %d do arquivo!", registerAdress);

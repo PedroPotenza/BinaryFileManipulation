@@ -20,6 +20,7 @@ int ReadField(char* string, FILE* fileRead){
         string[i] = unit;
         i++;    
     }
+    return i;
 }
 
 void Compress()
@@ -58,12 +59,14 @@ void Compress()
     char mark;
     char field[50];
     int fieldSize;
+    int g = 0;
 
     while(fread(&size, sizeof(int), 1, fileRead)){
-        printf("iteracao");
+        printf("\niteracao %d\n", g);
 
         fread(&mark, sizeof(char), 1, fileRead);
         
+        printf("Mark: %c -> Real %c", mark, realMarker);
         if(mark == realMarker){
             fwrite(&size, 1, sizeof(int), fileWrite);
             fwrite(&mark, 1, sizeof(char), fileWrite);
@@ -94,8 +97,10 @@ void Compress()
             fieldSize = ReadField(field, fileRead);
 
             fwrite(&field, 1, fieldSize, fileWrite);
+            fwrite(&divider, 1, sizeof(divider), fileWrite);
 
             printf("\nRegistro adicionado no arquivo temporario!\n");
+            printf("\nFTELL = %ld \n", ftell(fileRead));
 
         } else {
 
@@ -103,8 +108,8 @@ void Compress()
             printf("\nRegistro excluido do temporario!\n");
 
         }
-
         
+        g++;
     };
     
 
