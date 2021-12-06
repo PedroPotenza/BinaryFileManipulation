@@ -31,7 +31,7 @@
     EXEMPLO: 61$1#1#João da Silva# Indiana Jones e a Última Cruzada#Aventura
 */
 
-FILE * file_open_read(char * filename) {
+FILE * fileOpenRead(char * filename) {
 	FILE *file = fopen(filename, "rb");
 	
 	if(file == NULL) {
@@ -42,7 +42,7 @@ FILE * file_open_read(char * filename) {
 	return file;	
 }
 
-FILE * connect_DB() {
+FILE * connectDB() {
 	char * filename = "dataResult.bin";
 	
 	if(access(filename, F_OK ) == 0)
@@ -63,17 +63,17 @@ FILE * connect_DB() {
 int main(int argc, char const *argv[])
 {
     //le o arquivo insere.bin
-    FILE* file = file_open_read("insere.bin");
+    FILE* file = fileOpenRead("insere.bin");
 
     REGISTER* insertData;
-    int insertSize = 4;
+    int insertSize = 15;
 
     insertData = (REGISTER*) malloc(insertSize * sizeof(REGISTER));
 
     fread(insertData, sizeof(REGISTER), insertSize, file);
     fclose(file);
     
-    file = file_open_read("remove.bin");
+    file = fileOpenRead("remove.bin");
 
     KEY* removeData;
     int removeSize = 3;
@@ -83,7 +83,7 @@ int main(int argc, char const *argv[])
     fread(removeData, sizeof(KEY), removeSize, file);
     fclose(file);
     
-    file = connect_DB();
+    file = connectDB();
     
     int inseridos = 0;
     int removidos = 0;

@@ -7,42 +7,6 @@
 #define true 1
 #define false 0
 
-int ReadField(char* string, FILE* fileRead){
-
-    char unit;
-    int i = 0;
-    
-    /*
-    	fread(size, sizeof(int), 1, file);
-		fread(&reg_str, sizeof(char), 30, file);
-	*/
-    
-
-    while(fread(&unit, sizeof(char), 1, fileRead)){
-        
-        if(unit == '#')
-            return i;
-
-        string[i] = unit;
-        i++;    
-    }
-    return i;
-}
-
-void MoveToNextField(FILE* fileRead){
-
-    char unit;
-
-    while(fread(&unit, sizeof(char), 1, fileRead)){ //le byte por byte até achar o pipe
-        if(unit == '|') 
-            break;
-    }
-
-    fseek(fileRead, -sizeof(int), SEEK_CUR);  //como o pipe ta depois do size, devemos voltar sua posição
-    fseek(fileRead, -sizeof(char), SEEK_CUR); //como o pipe foi lido, devemos voltar sua posição
-
-}
-
 void Compress()
 {
     FILE* fileRead;
@@ -50,7 +14,6 @@ void Compress()
 
     char realMarker = '$';
     char removedMarker = '*';
-    char initializer = '|';
     char divider = '#';
 
     if ((fileRead = fopen("dataResult.bin", "rb")) == NULL)
@@ -67,7 +30,7 @@ void Compress()
 
     fseek(fileRead, sizeof(int), SEEK_SET); //pula o offset antigo
     
-    int offset = 0;
+    int offset = -1;
     fwrite(&offset, 1, sizeof(int), fileWrite); //escreve um offset zerado
 
     int data;
@@ -77,15 +40,20 @@ void Compress()
     fwrite(&data, 1, sizeof(int), fileWrite);
 
     int size;
-    char mark;
-    char field[50];
-    int fieldSize;
-    // int g = 0;
-    char reg_str[512];
+
+    char stringRegister[sizeof(REGISTER) + 6];
 	
     while(fread(&size, sizeof(int), 1, fileRead)){ //le o tamanho
-        printf("\niteracao %d\n", size);
-        fread(reg_str, sizeof(char), size-4, fileRead);
+        
+        fread(stringRegister, sizeof(char), size, fileRead);
+
+        if(stringRegister[1] == realMarker){
+            fwrite(stringRegister, size, sizeof(char), fileWrite);
+            printf("Registro adicionado no arquivo temporario!\n");
+        } else {
+            fseek(fileRead, size, SEEK_CUR);
+            printf("Registro excluido do temporario!\n");
+        }
 
        /*fseek(fileRead, sizeof(char), SEEK_CUR); // le o pipe
         fread(&mark, sizeof(char), 1, fileRead); // le a marca

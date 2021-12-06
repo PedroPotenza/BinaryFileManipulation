@@ -48,16 +48,15 @@ int Remove(KEY key)
         }
 
         char mark;
-        fseek(resultFile, sizeof(char), SEEK_CUR);
         fread(&mark, sizeof(char), 1, resultFile);
 
         if(mark == '*'){
-            fseek(resultFile, size - 2, SEEK_CUR);
+            fseek(resultFile, size - 1, SEEK_CUR);
             continue;
         }
 
         fread(&readKey.ClientId, sizeof(int), 1, resultFile);
-        fseek(resultFile, 1, SEEK_CUR);
+        fseek(resultFile, 1, SEEK_CUR); //divider
         fread(&readKey.MovieId, sizeof(int), 1, resultFile);
 
         if(readKey.ClientId == key.ClientId || readKey.MovieId == key.MovieId) {
@@ -69,7 +68,7 @@ int Remove(KEY key)
             fwrite(&removedMark, 1, sizeof(char), resultFile);
             fwrite(&offset, 1, sizeof(int), resultFile);
             
-            fseek(resultFile, -10, SEEK_CUR);
+            fseek(resultFile, -(2*sizeof(int) + sizeof(char)), SEEK_CUR); // volta 1 int (offset escrito no registro local), 1 char (marcador) e 1 int (size do registro)
             int adress = ftell(resultFile);
 
             rewind(resultFile);
