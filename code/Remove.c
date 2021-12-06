@@ -67,8 +67,14 @@ int Remove(KEY key)
             char removedMark = '*';
             fwrite(&removedMark, 1, sizeof(char), resultFile);
             fwrite(&offset, 1, sizeof(int), resultFile);
+            char trash = '-';
+            for (int i = 0; i < size - sizeof(int); i++)
+            {
+                fwrite(&trash, 1, sizeof(char), resultFile);
+            }
             
-            fseek(resultFile, -(2*sizeof(int) + sizeof(char)), SEEK_CUR); // volta 1 int (offset escrito no registro local), 1 char (marcador) e 1 int (size do registro)
+            
+            fseek(resultFile, -(2 * sizeof(int) + 2), SEEK_CUR); // volta 1 int (offset escrito no registro local), 1 char (marcador) e 1 int (size do registro)
             int adress = ftell(resultFile);
 
             rewind(resultFile);

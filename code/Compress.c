@@ -72,6 +72,12 @@ void Compress()
             fwrite(stringRegister, size - (2*sizeof(int) + 2*sizeof(char)), sizeof(char), fileWrite);
 
             //fazer ele andar ate a marcacao do proximo registro e retornar 1 char e 1 int pra ele ir para a proxima iteracao de fato caso tenha lixo do registro anterior
+            char unit;
+            do{
+                fread(&unit, sizeof(char), 1, fileRead);
+            }while(unit == '-');
+
+            fseek(fileRead, -sizeof(char), SEEK_CUR);
 
             printf("Registro adicionado no arquivo temporario!\n");
 
