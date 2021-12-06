@@ -42,14 +42,39 @@ void Compress()
     int size;
 
     char stringRegister[sizeof(REGISTER) + 6];
+    char mark;
 	
     while(fread(&size, sizeof(int), 1, fileRead)){ //le o tamanho
         
-        fread(stringRegister, sizeof(char), size, fileRead);
+        fread(&mark, sizeof(char), 1, fileRead);
 
-        if(stringRegister[1] == realMarker){
-            fwrite(stringRegister, size, sizeof(char), fileWrite);
+        //printf("\n%s", stringRegister);
+
+        if(mark == realMarker){
+
+            fwrite(&size, 1, sizeof(int), fileWrite);
+            fwrite(&realMarker, 1, sizeof(char), fileWrite);
+
+            int key;
+            fread(&key, sizeof(int), 1, fileRead);
+            fwrite(&key, 1, sizeof(int), fileWrite);
+
+            fseek(fileRead,sizeof(char), SEEK_CUR);
+            fwrite(&divider, 1, sizeof(char), fileWrite);
+
+            fread(&key, sizeof(int), 1, fileRead);
+            fwrite(&key, 1, sizeof(int), fileWrite);
+
+            fseek(fileRead,sizeof(char), SEEK_CUR);
+            fwrite(&divider, 1, sizeof(char), fileWrite);
+
+            fread(stringRegister, size - (2*sizeof(int) + 2*sizeof(char)), sizeof(char), fileRead); //ele vai olhar so as strings.
+            fwrite(stringRegister, size - (2*sizeof(int) + 2*sizeof(char)), sizeof(char), fileWrite);
+
+            //fazer ele andar ate a marcacao do proximo registro e retornar 1 char e 1 int pra ele ir para a proxima iteracao de fato caso tenha lixo do registro anterior
+
             printf("Registro adicionado no arquivo temporario!\n");
+
         } else {
             fseek(fileRead, size, SEEK_CUR);
             printf("Registro excluido do temporario!\n");
