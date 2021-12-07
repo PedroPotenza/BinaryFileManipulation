@@ -41,6 +41,8 @@ int Remove(KEY key)
     int size;
 
     while(fread(&size, sizeof(int), 1, resultFile)){
+
+        // printf("Size do registro: %d\n", size);
         
         if(size == 0){
             exist = 0;
@@ -49,9 +51,11 @@ int Remove(KEY key)
 
         char mark;
         fread(&mark, sizeof(char), 1, resultFile);
+        // printf("Mark do registro: %c\n", mark);
 
         if(mark == '*'){
-            fseek(resultFile, size - 1, SEEK_CUR);
+            fseek(resultFile, size, SEEK_CUR);
+            // printf("Local apos o registro removido: %d\n", ftell(resultFile));
             continue;
         }
 
@@ -59,11 +63,19 @@ int Remove(KEY key)
         fseek(resultFile, 1, SEEK_CUR); //divider
         fread(&readKey.MovieId, sizeof(int), 1, resultFile);
 
+        // printf("==== comparacao importante ====\n");
+        // printf("Chave do cliente do registro: %d \n", readKey.ClientId);
+        // printf("Chave do cliente do remove.bin: %d \n", key.ClientId);
+        // printf("Chave do filme do registro: %d \n", readKey.MovieId);
+        // printf("Chave do cliente do remove.bin: %d \n", key.MovieId);
+
         if(readKey.ClientId == key.ClientId || readKey.MovieId == key.MovieId) {
 
             printf("Registro Removido com sucesso!\n");
 
-            fseek(resultFile, -(2 * sizeof(int) + 2), SEEK_CUR);
+            fseek(resultFile, -(3 * sizeof(int) + 2), SEEK_CUR);
+            int adress = ftell(resultFile);
+            fseek(resultFile, sizeof(int), SEEK_CUR);
             char removedMark = '*';
             fwrite(&removedMark, 1, sizeof(char), resultFile);
             fwrite(&offset, 1, sizeof(int), resultFile);
@@ -72,11 +84,7 @@ int Remove(KEY key)
             {
                 fwrite(&trash, 1, sizeof(char), resultFile);
             }
-            
-            
-            fseek(resultFile, -(2 * sizeof(int) + 2), SEEK_CUR); // volta 1 int (offset escrito no registro local), 1 char (marcador) e 1 int (size do registro)
-            int adress = ftell(resultFile);
-
+             
             rewind(resultFile);
             fwrite(&adress, 1, sizeof(int), resultFile);
             fclose(resultFile);

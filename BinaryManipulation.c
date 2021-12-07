@@ -76,7 +76,7 @@ int main(int argc, char const *argv[])
     file = fileOpenRead("remove.bin");
 
     KEY* removeData;
-    int removeSize = 3;
+    int removeSize = 15;
     
     removeData = (KEY*) malloc(removeSize * sizeof(KEY));
     
