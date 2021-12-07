@@ -1,14 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
-
-#include "code/Insert.c"
-#include "code/Remove.c"
-#include "code/Compress.c"
-#include "code/Util.c"
 
 #define true 1
 #define false 0
+
+typedef struct s_Key {
+    int ClientId;
+    int MovieId;
+} KEY;
+
+typedef struct s_Register {
+    
+    KEY Id;
+    char ClientName[50];
+    char MovieName[50];
+    char Genre[50];
+} REGISTER;
+
+int Insert(REGISTER registerData);
+int Remove(KEY key);
+void Compress();
+int Verifica(int address, int size);
 
 /*
 
@@ -162,4 +176,273 @@ int main(int argc, char const *argv[])
     }
 
     return 0;
+}
+
+int findAdressToFit(int adressToSee, int registerSize, FILE* file){
+
+    if(adressToSee == -1)
+        return -1;
+
+    fseek(file, adressToSee, SEEK_SET);
+    int localSize;
+    fread(&localSize, sizeof(int), 1, file);
+
+    if(localSize >= registerSize){
+        return adressToSee;
+    } else {
+        fseek(file, 1 * sizeof(char), SEEK_CUR);
+        int newAdressToSee;
+        fread(&newAdressToSee, sizeof(int), 1, file);
+        return findAdressToFit(newAdressToSee, registerSize, file);
+    }
+
+}
+
+/* INSERE */
+int Insert(REGISTER registerData)
+{
+    if(registerData.Id.ClientId == 0 || registerData.Id.MovieId == 0) {
+        printf("Registro nulo não inserido\n");
+        return 0;
+    }
+
+    char realMarker = '$';
+    char removedMarker = '*';
+    char divider = '#';
+
+    
+    FILE* resultFile;
+    
+    if( access("dataResult.bin", F_OK ) == 0 ) {
+	    resultFile = fopen("dataResult.bin", "r+b");
+	} else {
+	    resultFile = fopen("dataResult.bin", "w+b");
+	}
+
+    //int registerSize = sizeof(registerData) + 6 * sizeof(char); //+ char pq falta contar a marca
+    int registerSize = 2 * sizeof(int) + strlen(registerData.ClientName) + strlen(registerData.MovieName) + strlen(registerData.Genre) + 4 * sizeof(char);
+    printf("tamanho do registro: %d\n", registerSize);
+    // printf("tamanho do nome do Cliente: %d", );
+    // printf("tamanho do nome do Filme: %d", );
+    // printf("tamanho do nome do Genero: %d", );
+
+    int offset;
+
+    fread(&offset, sizeof(int), 1, resultFile);
+
+    int registerAdress = findAdressToFit(offset, registerSize, resultFile);
+    if (registerAdress == -1)
+        fseek(resultFile, 0, SEEK_END);
+    else {
+        fseek(resultFile, registerAdress + sizeof(int) + 1 * sizeof(char), SEEK_SET);
+        int newOffset;
+        fread(&newOffset, sizeof(int), 1, resultFile);
+        rewind(resultFile);
+        fwrite(&newOffset, 1, sizeof(int), resultFile);
+        fseek(resultFile, registerAdress, SEEK_SET);
+    }
+
+    fwrite(&registerSize, 1, sizeof(int), resultFile);
+    fwrite(&realMarker, 1, sizeof(char), resultFile);
+    fwrite(&registerData.Id.ClientId, 1, sizeof(int), resultFile);
+    fwrite(&divider, 1, sizeof(divider), resultFile);
+    fwrite(&registerData.Id.MovieId, 1, sizeof(int), resultFile);
+    fwrite(&divider, 1, sizeof(divider), resultFile);
+    fwrite(&registerData.ClientName, 1, strlen(registerData.ClientName), resultFile);
+    fwrite(&divider, 1, sizeof(divider), resultFile);
+    fwrite(&registerData.MovieName, 1, strlen(registerData.MovieName), resultFile);
+    fwrite(&divider, 1, sizeof(divider), resultFile);
+    fwrite(&registerData.Genre, 1, strlen(registerData.Genre), resultFile);
+
+    if(registerAdress != -1)
+        printf("Registro adicionado no byte %d do arquivo!", registerAdress);
+    else
+        printf("Registro adicionado no final do arquivo!");
+
+    fclose(resultFile);
+    return 1;
+}
+
+/* Remove */
+int Remove(KEY key)
+{
+    /*
+    recebe a chave a ser removida “CodCli+CodF”
+    abre DataResult.bin
+    removido = false
+    percorre todos os registros
+        se a chave bate
+            printa o registro a ser removido (acho bom q assim a gente sempre vai ter nocao das coisas)
+            printa falando que a remocao foi feita com sucesso
+            marca o segundo campo com * 
+            marca o endereco que tinha no header
+            muda o endereco do header para o endereco desse registro
+            removido = true
+    se removido = false
+        printa falando que nao foi possivel localizar chave
+    fecha DataResult.bin
+    */
+
+   FILE* resultFile;
+
+    if ((resultFile = fopen("dataResult.bin", "r+b")) == NULL)
+    {
+        printf("The result file cannot be open.");
+        return 0;
+    }
+
+    int offset;
+    fread(&offset, sizeof(int), 1, resultFile);
+
+    fseek(resultFile, 2 * sizeof(int), SEEK_CUR);
+
+    int exist = 1;
+
+    KEY readKey;
+
+    int size;
+
+    while(fread(&size, sizeof(int), 1, resultFile)){
+
+        if(size == 0){
+            exist = 0;
+            break;
+        }
+
+        char mark;
+        fread(&mark, sizeof(char), 1, resultFile);
+
+        if(mark == '*'){
+            fseek(resultFile, size, SEEK_CUR);
+            continue;
+        }
+
+        fread(&readKey.ClientId, sizeof(int), 1, resultFile);
+        fseek(resultFile, 1, SEEK_CUR); //divider
+        fread(&readKey.MovieId, sizeof(int), 1, resultFile);
+
+        if(readKey.ClientId == key.ClientId || readKey.MovieId == key.MovieId) {
+
+            printf("Registro Removido com sucesso!\n");
+
+            fseek(resultFile, -(3 * sizeof(int) + 2), SEEK_CUR);
+            int adress = ftell(resultFile);
+            fseek(resultFile, sizeof(int), SEEK_CUR);
+            char removedMark = '*';
+            fwrite(&removedMark, 1, sizeof(char), resultFile);
+            fwrite(&offset, 1, sizeof(int), resultFile);
+            char trash = '-';
+            for (int i = 0; i < size - sizeof(int); i++)
+            {
+                fwrite(&trash, 1, sizeof(char), resultFile);
+            }
+             
+            rewind(resultFile);
+            fwrite(&adress, 1, sizeof(int), resultFile);
+            fclose(resultFile);
+
+            exist = 0;
+            return 1;
+        }
+
+    }
+    
+    printf("Nao foi possivel localizar tal chave!\n");
+    return 0;
+}
+
+/* Compress */
+void Compress()
+{
+    FILE* fileRead;
+    FILE* fileWrite;
+
+    char realMarker = '$';
+    char removedMarker = '*';
+    char divider = '#';
+
+    if ((fileRead = fopen("dataResult.bin", "rb")) == NULL)
+    {
+        printf("The result file cannot be open.");
+        return;
+    }
+
+    if ((fileWrite = fopen("Temp.bin", "wb")) == NULL)
+    {
+        printf("The result file cannot be open.");
+        return;
+    }
+
+    fseek(fileRead, sizeof(int), SEEK_SET);
+    
+    int offset = -1;
+    fwrite(&offset, 1, sizeof(int), fileWrite);
+
+    int data;
+    fread(&data, sizeof(int), 1, fileRead); 
+    fwrite(&data, 1, sizeof(int), fileWrite);
+    fread(&data, sizeof(int), 1, fileRead);
+    fwrite(&data, 1, sizeof(int), fileWrite);
+
+    int size;
+
+    char stringRegister[sizeof(REGISTER) + 6];
+    char mark;
+	
+    while(fread(&size, sizeof(int), 1, fileRead)) {
+        
+        fread(&mark, sizeof(char), 1, fileRead);
+
+        if(mark == realMarker){
+
+            fwrite(&size, 1, sizeof(int), fileWrite);
+            fwrite(&realMarker, 1, sizeof(char), fileWrite);
+
+            int key;
+            fread(&key, sizeof(int), 1, fileRead);
+            fwrite(&key, 1, sizeof(int), fileWrite);
+
+            fseek(fileRead,sizeof(char), SEEK_CUR);
+            fwrite(&divider, 1, sizeof(char), fileWrite);
+
+            fread(&key, sizeof(int), 1, fileRead);
+            fwrite(&key, 1, sizeof(int), fileWrite);
+
+            fseek(fileRead,sizeof(char), SEEK_CUR);
+            fwrite(&divider, 1, sizeof(char), fileWrite);
+
+            fread(stringRegister, size - (2*sizeof(int) + 2*sizeof(char)), sizeof(char), fileRead);
+            fwrite(stringRegister, size - (2*sizeof(int) + 2*sizeof(char)), sizeof(char), fileWrite);
+
+            char unit;
+            do{
+                fread(&unit, sizeof(char), 1, fileRead);
+            }while(unit == '-');
+
+            fseek(fileRead, -sizeof(char), SEEK_CUR);
+
+            printf("Registro adicionado no arquivo temporario!\n");
+
+        } else {
+            fseek(fileRead, size, SEEK_CUR);
+            printf("Registro excluido do temporario!\n");
+        }
+    };
+    
+    fclose(fileRead);
+    fclose(fileWrite);
+
+    if (remove("dataResult.bin") == 0) {
+        printf("\ndataResult.bin deletado!");
+    } else {
+        printf("\n Nao foi possivel deletar dataResult.bin!");
+    }
+
+    int result = rename("Temp.bin", "dataResult.bin");
+    if (result == 0) {
+        printf("\nTemp.bin renomeado com sucesso para dataResult.bin!\n");
+    } else {
+        printf("\nNão foi possivel renomear Temp.bin para dataResult.bin!\n");
+    }
+    
 }
