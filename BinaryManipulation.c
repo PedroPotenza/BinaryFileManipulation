@@ -103,7 +103,7 @@ int main(int argc, char const *argv[])
     printf(" (3) - Compactar Arquivo\n");
     printf(" (4) - Sair\n");
     
-    int option, repeat = true;
+    int option, repeat, inserted = true;
     while(repeat)
     {
 
@@ -113,19 +113,21 @@ int main(int argc, char const *argv[])
         switch (option)
         {
         case 1:
-            Insert(insertData[inseridos]);
-            inseridos++;
-            printf("\nInseridos para escrever: %d\n", inseridos);
-            
-            if ((file = fopen("dataResult.bin", "r+b")) == NULL)
-            {
-                printf("The result file cannot be open.");
-                return 0;
+            inserted = Insert(insertData[inseridos]);
+            if(inserted == true) {
+                inseridos++;
+                printf("\nInseridos para escrever: %d\n", inseridos);
+                
+                if ((file = fopen("dataResult.bin", "r+b")) == NULL)
+                {
+                    printf("The result file cannot be open.");
+                    return 0;
+                }
+                rewind(file);
+                fseek(file, 4, SEEK_SET);
+                fwrite(&inseridos, 1, sizeof(int), file);
+                fclose(file);
             }
-            rewind(file);
-            fseek(file, 4, SEEK_SET);
-            fwrite(&inseridos, 1, sizeof(int), file);
-            fclose(file);
             break;
 
         case 2:

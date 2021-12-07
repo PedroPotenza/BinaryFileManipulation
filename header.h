@@ -14,7 +14,7 @@ typedef struct s_Register {
     char Genre[50];
 } REGISTER;
 
-void Insert(REGISTER registerData);
+int Insert(REGISTER registerData);
 int Remove(KEY key);
 void Compress();
 int Verifica(int address, int size);

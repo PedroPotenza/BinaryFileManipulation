@@ -25,8 +25,13 @@ int findAdressToFit(int adressToSee, int registerSize, FILE* file){
 
 }
 
-void Insert(REGISTER registerData)
+int Insert(REGISTER registerData)
 {
+    if(registerData.Id.ClientId == 0 || registerData.Id.MovieId == 0) {
+        printf("Registro nulo não inserido\n");
+        return 0;
+    }
+
     char realMarker = '$';
     char removedMarker = '*';
     char divider = '#';
@@ -81,4 +86,5 @@ void Insert(REGISTER registerData)
         printf("Registro adicionado no final do arquivo!");
 
     fclose(resultFile);
+    return 1;
 }
