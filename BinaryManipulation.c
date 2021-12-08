@@ -1,21 +1,25 @@
 /*
+    Alunos:
+        Gabriel Tetzlaf Mansano - 201150956
+        Pedro Henrique Potenza Fernandes - 201151219
+
     Sobre o dataResult.bin :
-    Header contém 3 informacoes: 
-        - 1 int q vai ser o endereco de memoria da lista de removidos
-        - 1 char para salvar que posicao do vetor de inserir paramos (aqui pode ser char pq n vai passar de 255)
-        - 1 char para salvar que posicao do vetor de remocao paramos (aqui pode ser char pq n vai passar de 255)
+        Header contém 3 informacoes: 
+            - 1 int q vai ser o endereco de memoria da lista de removidos
+            - 1 char para salvar que posicao do vetor de inserir paramos (aqui pode ser char pq n vai passar de 255)
+            - 1 char para salvar que posicao do vetor de remocao paramos (aqui pode ser char pq n vai passar de 255)
 
-    Campos do registro :
-        primeiro campo: Tamanho do Registro
-        segundo campo: Valido ($) ou Invalido (*)
-        terceiro campo: Codigo do Cliente
-        quarto campo: Codigo do Filme
-        quinto campo: Nome do Cliente
-        sexto campo: Nome do Filme
-        setimo campo: Genero
+        Campos do registro :
+            primeiro campo: Tamanho do Registro
+            segundo campo: Valido ($) ou Invalido (*)
+            terceiro campo: Codigo do Cliente
+            quarto campo: Codigo do Filme
+            quinto campo: Nome do Cliente
+            sexto campo: Nome do Filme
+            setimo campo: Genero
 
-    A partir do terceiro campo, eles vao ser separados usando # (obrigatorio) 
-        Exemplo: 61$1#1#João da Silva# Indiana Jones e a Última Cruzada#Aventura
+        A partir do terceiro campo, eles vao ser separados usando # (obrigatorio) 
+            Exemplo: 61$1#1#João da Silva# Indiana Jones e a Última Cruzada#Aventura
 
     Remocao:
         Todos os campos de registros removidos têm seus dados substituídos pelo caracter "-" 
