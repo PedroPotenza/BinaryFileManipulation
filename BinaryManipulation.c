@@ -16,12 +16,15 @@
 
     A partir do terceiro campo, eles vao ser separados usando # (obrigatorio) 
         Exemplo: 61$1#1#João da Silva# Indiana Jones e a Última Cruzada#Aventura
+
+    Remocao:
+        Todos os campos de registros removidos têm seus dados substituídos pelo caracter "-" 
 */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
 /*-------------------------------------- Globals --------------------------------------*/
 #define true 1
@@ -34,7 +37,6 @@ typedef struct s_Key {
 } KEY;
 
 typedef struct s_Register {
-    
     KEY Id;
     char ClientName[50];
     char MovieName[50];
@@ -45,7 +47,7 @@ typedef struct s_Register {
 int Insert(REGISTER registerData);
 int Remove(KEY key);
 void Compress();
-int Verifica(int address, int size);
+
 
 /*-------------------------------------- Utils --------------------------------------*/
 FILE * fileOpenRead(char * filename) {
@@ -61,14 +63,14 @@ FILE * fileOpenRead(char * filename) {
 
 FILE * connectDB() {
 	char * filename = "dataResult.bin";
+	int ZERO = 0;
+	int LISTA_VAZIA = -1;
 	
 	if(access(filename, F_OK ) == 0)
 		return fopen(filename, "r+b");
 		
 	FILE * file = fopen(filename, "w+b");
 	
-	int ZERO = 0;
-	int LISTA_VAZIA = -1;
 	fwrite(&LISTA_VAZIA, sizeof(int), 1, file);
 	fwrite(&ZERO, sizeof(int), 1, file);
 	fwrite(&ZERO, sizeof(int), 1, file);
@@ -77,20 +79,22 @@ FILE * connectDB() {
 }
 
 int findAdressToFit(int adressToSee, int registerSize, FILE* file){
+    int localSize;
 
     if(adressToSee == -1)
         return -1;
 
     fseek(file, adressToSee, SEEK_SET);
-    int localSize;
     fread(&localSize, sizeof(int), 1, file);
 
     if(localSize >= registerSize){
         return adressToSee;
     } else {
-        fseek(file, 1 * sizeof(char), SEEK_CUR);
         int newAdressToSee;
+
+        fseek(file, 1 * sizeof(char), SEEK_CUR);
         fread(&newAdressToSee, sizeof(int), 1, file);
+
         return findAdressToFit(newAdressToSee, registerSize, file);
     }
 
@@ -128,16 +132,17 @@ int main(int argc, char const *argv[])
     fread(&inseridos, sizeof(int), 1, file);
     fread(&removidos, sizeof(int), 1, file);
 
-    printf("Inseridos: %d\n", inseridos);
-    printf("Removidos: %d\n", removidos);
+    printf("\n---------- Contador Inicial ----------\n");
+    printf("\tRegistros inseridos: %d\n", inseridos);
+    printf("\tRegistros removidos: %d\n\n", removidos);
 
     fclose(file);
 
-    printf("--------- MENU ---------\n");
-    printf(" (1) - Inserir Registro\n");
-    printf(" (2) - Remover Registro\n");
-    printf(" (3) - Compactar Arquivo\n");
-    printf(" (4) - Sair\n");
+    printf("--------- Menu ---------\n");
+    printf(" (1) -> Inserir Registro\n");
+    printf(" (2) -> Remover Registro\n");
+    printf(" (3) -> Compactar Arquivo\n");
+    printf(" (4) -> Sair\n");
     
     int option, repeat, inserted = true;
     while(repeat)
@@ -152,7 +157,6 @@ int main(int argc, char const *argv[])
             inserted = Insert(insertData[inseridos]);
             if(inserted == true) {
                 inseridos++;
-                printf("\nInseridos para escrever: %d\n", inseridos);
                 
                 if ((file = fopen("dataResult.bin", "r+b")) == NULL)
                 {
@@ -169,7 +173,6 @@ int main(int argc, char const *argv[])
         case 2:
             if (Remove(removeData[removidos]) == 1) {
                 removidos++;
-                printf("\nRemovidos para escrever: %d\n", removidos);
                 
                 if ((file = fopen("dataResult.bin", "r+b")) == NULL)
                 {
@@ -221,12 +224,7 @@ int Insert(REGISTER registerData)
 	    resultFile = fopen("dataResult.bin", "w+b");
 	}
 
-    //int registerSize = sizeof(registerData) + 6 * sizeof(char); //+ char pq falta contar a marca
     int registerSize = 2 * sizeof(int) + strlen(registerData.ClientName) + strlen(registerData.MovieName) + strlen(registerData.Genre) + 4 * sizeof(char);
-    printf("tamanho do registro: %d\n", registerSize);
-    // printf("tamanho do nome do Cliente: %d", );
-    // printf("tamanho do nome do Filme: %d", );
-    // printf("tamanho do nome do Genero: %d", );
 
     int offset;
 
@@ -333,7 +331,7 @@ int Remove(KEY key)
 
     }
     
-    printf("Nao foi possivel localizar tal chave!\n");
+    printf("Nao foi possivel localizar a chave {%d, %d}!\n", key.ClientId, key.MovieId);
     return 0;
 }
 
