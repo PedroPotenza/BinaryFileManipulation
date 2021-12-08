@@ -1,9 +1,0 @@
-{
-    "cSpell.enableFiletypes": [
-        "!c"
-    ],
-    "files.associations": {
-        "binarymanipulation": "c",
-        "string.h": "c"
-    }
-}
