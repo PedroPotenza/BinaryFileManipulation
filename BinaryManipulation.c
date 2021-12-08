@@ -152,7 +152,7 @@ int main(int argc, char const *argv[])
     while(repeat)
     {
 
-        printf("Opcao: ");
+        printf("\n\nOpcao: ");
         scanf("%d", &option);
 
         switch (option)
