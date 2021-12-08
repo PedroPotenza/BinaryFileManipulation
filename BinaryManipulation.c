@@ -175,19 +175,21 @@ int main(int argc, char const *argv[])
             break;
 
         case 2:
-            if (Remove(removeData[removidos]) == 1) {
-                removidos++;
-                
-                if ((file = fopen("dataResult.bin", "r+b")) == NULL)
-                {
-                    printf("The result file cannot be open.");
-                    return 0;
-                }
-                rewind(file);
-                fseek(file, 8, SEEK_SET);
-                fwrite(&removidos, 1, sizeof(int), file);
-                fclose(file);
+            //Caso seja necessário prosseguit no vetor apenas de removido com sucesso: if (Remove(removeData[removidos]) == 1) 
+
+            Remove(removeData[removidos]);
+            removidos++;
+            
+            if ((file = fopen("dataResult.bin", "r+b")) == NULL)
+            {
+                printf("The result file cannot be open.");
+                return 0;
             }
+            rewind(file);
+            fseek(file, 8, SEEK_SET);
+            fwrite(&removidos, 1, sizeof(int), file);
+            fclose(file);
+            
             break;
 
         case 3:
