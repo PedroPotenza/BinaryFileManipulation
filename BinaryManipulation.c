@@ -1,11 +1,33 @@
+/*
+    Sobre o dataResult.bin :
+    Header contém 3 informacoes: 
+        - 1 int q vai ser o endereco de memoria da lista de removidos
+        - 1 char para salvar que posicao do vetor de inserir paramos (aqui pode ser char pq n vai passar de 255)
+        - 1 char para salvar que posicao do vetor de remocao paramos (aqui pode ser char pq n vai passar de 255)
+
+    Campos do registro :
+        primeiro campo: Tamanho do Registro
+        segundo campo: Valido ($) ou Invalido (*)
+        terceiro campo: Codigo do Cliente
+        quarto campo: Codigo do Filme
+        quinto campo: Nome do Cliente
+        sexto campo: Nome do Filme
+        setimo campo: Genero
+
+    A partir do terceiro campo, eles vao ser separados usando # (obrigatorio) 
+        Exemplo: 61$1#1#João da Silva# Indiana Jones e a Última Cruzada#Aventura
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
+/*-------------------------------------- Globals --------------------------------------*/
 #define true 1
 #define false 0
 
+/*-------------------------------------- Structs --------------------------------------*/
 typedef struct s_Key {
     int ClientId;
     int MovieId;
@@ -19,32 +41,13 @@ typedef struct s_Register {
     char Genre[50];
 } REGISTER;
 
+/*-------------------------------------- Header --------------------------------------*/
 int Insert(REGISTER registerData);
 int Remove(KEY key);
 void Compress();
 int Verifica(int address, int size);
 
-/*
-
-    SORBE O ARQUIVO QUE TEREMOS COMO RESULTADO (DataResult.bin):
-    header vai ter 3 informacoes: 
-        - 1 int q vai ser o endereco de memoria da lista de removidos
-        - 1 char para salvar que posicao do vetor de inserir paramos (aqui pode ser char pq n vai passar de 255)
-        - 1 char para salvar que posicao do vetor de remocao paramos (aqui pode ser char pq n vai passar de 255)
-
-    SOBRE O REGISTRO:
-    primeiro campo: Tamanho do Registro
-    segundo campo: Valido ($) ou Invalido (*)
-    terceiro campo: Codigo do Cliente
-    quarto campo: Codigo do Filme
-    quinto campo: Nome do Cliente
-    sexto campo: Nome do Filme
-    setimo campo: Genero
-
-    A partir do terceiro campo, eles vao ser separados usando # (obrigatorio) 
-    EXEMPLO: 61$1#1#João da Silva# Indiana Jones e a Última Cruzada#Aventura
-*/
-
+/*-------------------------------------- Utils --------------------------------------*/
 FILE * fileOpenRead(char * filename) {
 	FILE *file = fopen(filename, "rb");
 	
@@ -73,10 +76,29 @@ FILE * connectDB() {
 	return file;
 }
 
+int findAdressToFit(int adressToSee, int registerSize, FILE* file){
 
+    if(adressToSee == -1)
+        return -1;
+
+    fseek(file, adressToSee, SEEK_SET);
+    int localSize;
+    fread(&localSize, sizeof(int), 1, file);
+
+    if(localSize >= registerSize){
+        return adressToSee;
+    } else {
+        fseek(file, 1 * sizeof(char), SEEK_CUR);
+        int newAdressToSee;
+        fread(&newAdressToSee, sizeof(int), 1, file);
+        return findAdressToFit(newAdressToSee, registerSize, file);
+    }
+
+}
+
+/*-------------------------------------- Main --------------------------------------*/
 int main(int argc, char const *argv[])
 {
-    //le o arquivo insere.bin
     FILE* file = fileOpenRead("insere.bin");
 
     REGISTER* insertData;
@@ -178,27 +200,7 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-int findAdressToFit(int adressToSee, int registerSize, FILE* file){
-
-    if(adressToSee == -1)
-        return -1;
-
-    fseek(file, adressToSee, SEEK_SET);
-    int localSize;
-    fread(&localSize, sizeof(int), 1, file);
-
-    if(localSize >= registerSize){
-        return adressToSee;
-    } else {
-        fseek(file, 1 * sizeof(char), SEEK_CUR);
-        int newAdressToSee;
-        fread(&newAdressToSee, sizeof(int), 1, file);
-        return findAdressToFit(newAdressToSee, registerSize, file);
-    }
-
-}
-
-/* INSERE */
+/*-------------------------------------- INSERE --------------------------------------*/
 int Insert(REGISTER registerData)
 {
     if(registerData.Id.ClientId == 0 || registerData.Id.MovieId == 0) {
@@ -263,25 +265,9 @@ int Insert(REGISTER registerData)
     return 1;
 }
 
-/* Remove */
+/*-------------------------------------- Remove --------------------------------------*/
 int Remove(KEY key)
 {
-    /*
-    recebe a chave a ser removida “CodCli+CodF”
-    abre DataResult.bin
-    removido = false
-    percorre todos os registros
-        se a chave bate
-            printa o registro a ser removido (acho bom q assim a gente sempre vai ter nocao das coisas)
-            printa falando que a remocao foi feita com sucesso
-            marca o segundo campo com * 
-            marca o endereco que tinha no header
-            muda o endereco do header para o endereco desse registro
-            removido = true
-    se removido = false
-        printa falando que nao foi possivel localizar chave
-    fecha DataResult.bin
-    */
 
    FILE* resultFile;
 
@@ -351,7 +337,7 @@ int Remove(KEY key)
     return 0;
 }
 
-/* Compress */
+/*-------------------------------------- Compress --------------------------------------*/
 void Compress()
 {
     FILE* fileRead;
@@ -444,5 +430,4 @@ void Compress()
     } else {
         printf("\nNão foi possivel renomear Temp.bin para dataResult.bin!\n");
     }
-    
 }
