@@ -216,7 +216,6 @@ int Insert(REGISTER registerData)
     }
 
     char realMarker = '$';
-    char removedMarker = '*';
     char divider = '#';
 
     
@@ -284,8 +283,6 @@ int Remove(KEY key)
 
     fseek(resultFile, 2 * sizeof(int), SEEK_CUR);
 
-    int exist = 1;
-
     KEY readKey;
 
     int size;
@@ -293,7 +290,6 @@ int Remove(KEY key)
     while(fread(&size, sizeof(int), 1, resultFile)){
 
         if(size == 0){
-            exist = 0;
             break;
         }
 
@@ -329,7 +325,6 @@ int Remove(KEY key)
             fwrite(&adress, 1, sizeof(int), resultFile);
             fclose(resultFile);
 
-            exist = 0;
             return 1;
         }
 
@@ -346,7 +341,6 @@ void Compress()
     FILE* fileWrite;
 
     char realMarker = '$';
-    char removedMarker = '*';
     char divider = '#';
 
     if ((fileRead = fopen("dataResult.bin", "rb")) == NULL)
