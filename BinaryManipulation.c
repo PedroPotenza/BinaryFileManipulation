@@ -307,7 +307,7 @@ int Remove(KEY key)
         fseek(resultFile, 1, SEEK_CUR); //divider
         fread(&readKey.MovieId, sizeof(int), 1, resultFile);
 
-        if(readKey.ClientId == key.ClientId || readKey.MovieId == key.MovieId) {
+        if(readKey.ClientId == key.ClientId && readKey.MovieId == key.MovieId) {
 
             printf("Registro Removido com sucesso!\n");
 
@@ -328,6 +328,9 @@ int Remove(KEY key)
             fclose(resultFile);
 
             return 1;
+        } else {
+            fseek(resultFile, -(2 * sizeof(int) +1), SEEK_CUR);
+            fseek(resultFile, size, SEEK_CUR);
         }
 
     }
